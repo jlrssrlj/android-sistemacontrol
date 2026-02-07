@@ -1,0 +1,7 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<h1>Acceso Denegado</h1>
+    <p>No tienes permisos para acceder a esta página.</p>
+    <a href="{% url 'ventas' %}">Volver al inicio</a>
+{% endblock %}
