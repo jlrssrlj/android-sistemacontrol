@@ -16,7 +16,7 @@ export default function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Nota: 10.0.2.2 es correcto para el emulador de Android (localhost de la PC)
+    
     fetch('http://192.168.1.2:8000/api/proveedoresand/')
       .then(res => res.json())
       .then(data => setProveedores(data))
@@ -25,7 +25,7 @@ export default function App() {
   }, [])
 
   return (
-    // Usa 'flex' y 'bg-slate-100' (asegúrate que existan en tu paleta de Tailwind)
+    
     <View className="flex-1 bg-slate-100 px-4 pt-14">
       <Text className="text-3xl font-bold text-center mb-6 text-slate-800">
         Proveedores
@@ -39,7 +39,7 @@ export default function App() {
         <FlatList
           data={proveedores}
           keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false} // Limpieza visual
+          showsVerticalScrollIndicator={false} 
           renderItem={({ item }) => (
             <View className="bg-white p-5 rounded-2xl mb-4 shadow-sm border border-slate-200">
               <Text className="text-xl font-bold text-slate-900 mb-1">
@@ -52,7 +52,7 @@ export default function App() {
               </View>
             </View>
           )}
-          // 2. Si la lista está vacía, mostrar un mensaje
+          
           ListEmptyComponent={() => (
             <Text className="text-center text-slate-400 mt-10">No hay proveedores registrados</Text>
           )}
