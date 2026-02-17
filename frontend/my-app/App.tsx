@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { View, TextInput, Button, Text, ActivityIndicator } from 'react-native';
-import "./global.css"; // Tailwind + NativeWind
+import "./global.css";
 
 interface LoginResponse {
   access: string;
@@ -13,7 +13,7 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(''); 
+  const [message, setMessage] = useState('');
 
   const handleLogin = async () => {
     try {
@@ -51,6 +51,7 @@ export default function LoginScreen() {
         onChangeText={setUsername}
         className="p-3 mb-3 bg-white border rounded"
       />
+
       <TextInput
         placeholder="Contraseña"
         value={password}
@@ -65,7 +66,9 @@ export default function LoginScreen() {
         <Button title="Iniciar sesión" onPress={handleLogin} />
       )}
 
-      {message ? <Text className="mt-4 text-center text-slate-700">{message}</Text> : null}
+      {message && (
+        <Text className="mt-4 text-center text-slate-700">{message}</Text>
+      )}
     </View>
   );
 }
