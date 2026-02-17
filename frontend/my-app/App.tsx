@@ -1,63 +1,71 @@
-import { useEffect, useState } from 'react'
-import { View, Text, FlatList, ActivityIndicator } from 'react-native'
-// 1. IMPORTANTE: Importa tu CSS global para que NativeWind cargue los estilos
-import "./global.css"; 
+import { useState } from 'react';
+import { View, TextInput, Button, Text, ActivityIndicator } from 'react-native';
+import "./global.css"; // Tailwind + NativeWind
 
-interface Proveedor {
-  id: number
-  nombre: string
-  nit: string
-  direccion: string
-  telefono: string
+interface LoginResponse {
+  access: string;
+  refresh: string;
+  empleado_id: number;
+  rol: string;
 }
 
-export default function App() {
-  const [proveedores, setProveedores] = useState<Proveedor[]>([])
-  const [loading, setLoading] = useState(true)
+export default function LoginScreen() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState(''); 
 
-  useEffect(() => {
-    // Nota: 10.0.2.2 es correcto para el emulador de Android (localhost de la PC)
-    fetch('http://192.168.1.2:8000/api/proveedoresand/')
-      .then(res => res.json())
-      .then(data => setProveedores(data))
-      .catch(err => console.error("Error en fetch:", err))
-      .finally(() => setLoading(false))
-  }, [])
+  const handleLogin = async () => {
+    try {
+      setMessage('');
+      setLoading(true);
+
+      const res = await fetch('http://192.168.1.2:8000/api/login/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data: LoginResponse | { error: string } = await res.json();
+
+      if (!res.ok) {
+        setMessage((data as { error: string }).error || 'Login fallido');
+        return;
+      }
+
+      setMessage(`Login exitoso! Bienvenido, rol: ${(data as LoginResponse).rol}`);
+    } catch (err: any) {
+      setMessage('Error de conexión');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
-    // Usa 'flex' y 'bg-slate-100' (asegúrate que existan en tu paleta de Tailwind)
-    <View className="flex-1 bg-slate-100 px-4 pt-14">
-      <Text className="text-3xl font-bold text-center mb-6 text-slate-800">
-        Proveedores
-      </Text>
+    <View className="justify-center flex-1 px-4 bg-slate-100">
+      <Text className="mb-6 text-2xl font-bold text-center">Login</Text>
+
+      <TextInput
+        placeholder="Usuario"
+        value={username}
+        onChangeText={setUsername}
+        className="p-3 mb-3 bg-white border rounded"
+      />
+      <TextInput
+        placeholder="Contraseña"
+        value={password}
+        onChangeText={setPassword}
+        secureTextEntry
+        className="p-3 mb-3 bg-white border rounded"
+      />
 
       {loading ? (
-        <View className="flex-1 justify-center items-center">
-          <ActivityIndicator size="large" color="#1e293b" />
-        </View>
+        <ActivityIndicator size="large" color="#1e293b" className="my-3" />
       ) : (
-        <FlatList
-          data={proveedores}
-          keyExtractor={(item) => item.id.toString()}
-          showsVerticalScrollIndicator={false} // Limpieza visual
-          renderItem={({ item }) => (
-            <View className="bg-white p-5 rounded-2xl mb-4 shadow-sm border border-slate-200">
-              <Text className="text-xl font-bold text-slate-900 mb-1">
-                {item.nombre}
-              </Text>
-              <View className="space-y-1">
-                <Text className="text-slate-500 font-medium">NIT: {item.nit}</Text>
-                <Text className="text-slate-600">📍 {item.direccion}</Text>
-                <Text className="text-slate-600">📞 {item.telefono}</Text>
-              </View>
-            </View>
-          )}
-          // 2. Si la lista está vacía, mostrar un mensaje
-          ListEmptyComponent={() => (
-            <Text className="text-center text-slate-400 mt-10">No hay proveedores registrados</Text>
-          )}
-        />
+        <Button title="Iniciar sesión" onPress={handleLogin} />
       )}
+
+      {message ? <Text className="mt-4 text-center text-slate-700">{message}</Text> : null}
     </View>
-  )
+  );
 }

@@ -1,5 +1,4 @@
 from django.contrib.auth.decorators import login_required
-from dashboard.apis.api_views import ProveedorAPI
 from django.urls import path
 from . import views 
 from dashboard.vistas import (views_productos as producto) 
@@ -44,9 +43,4 @@ urlpatterns = [
     path('rol/editar/<int:id>/', views.Rol_views.editar_rol,name='editar_rol'),
     path('rol/eliminar/<int:id>', views.Rol_views.eliminar_rol, name='eliminar_rol'),
     
-
-
-    # Urls android
-    path('api/proveedoresand/',ProveedorAPI.as_view())
-
 ]
