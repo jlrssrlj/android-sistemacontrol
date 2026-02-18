@@ -1,8 +1,8 @@
 from django.urls import path
-from .views.proveedoresviews import ProveedorAPI
-from .views.loginviews import EmpleadoLoginAPI
+from rest_framework_simplejwt.views import TokenRefreshView
+from api.views.iniciologin.loginviews import CustomTokenObtainPairView
 
 urlpatterns = [
-    path('proveedores/', ProveedorAPI.as_view(), name='proveedores'),
-    path('login/', EmpleadoLoginAPI.as_view(), name='empleado_login')
+    path('login/', CustomTokenObtainPairView.as_view(), name='login'),
+    path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]
