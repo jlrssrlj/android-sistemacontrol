@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from dashboard.models import Proveedor
-from ...serializars import ProveedorSerializer
+from .serializars import ProveedorSerializer
 
 class ProveedorAPI(APIView):
     def get(self, request):

@@ -2,12 +2,17 @@ from django.urls import path
 from rest_framework_simplejwt.views import TokenRefreshView
 from api.views.iniciologin.loginviews import CustomTokenObtainPairView
 from .views.venta.ventasviews import VentaListCreateView, VentaDetailView
-from .views.mediopago.mediopagoviews import MedioPagoListView
+from .views.mediopago.mediopagoviews import MedioPagoView
+from .views.gastos.gastosviews import GastoAPI
+from .views.proveedores.proveedoresviews import ProveedorAPI
 
 urlpatterns = [
-    path('login/', CustomTokenObtainPairView.as_view(), name='login'),
+    path('loginandroid/', CustomTokenObtainPairView.as_view(), name='loginreact'),
     path('refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('ventas/', VentaListCreateView.as_view(), name='venta'),
     path('ventas/<int:pk>/', VentaDetailView.as_view(), name='venta'),
-    path("medios-pago/", MedioPagoListView.as_view()),
+    path("mediopagos/", MedioPagoView.as_view()),
+    path("mediopagos/<int:pk>/", MedioPagoView.as_view()),
+    path("gastos/", GastoAPI.as_view(), name='gasto'),
+    path("proveedores/", ProveedorAPI.as_view(), name='proveedors'),
 ]

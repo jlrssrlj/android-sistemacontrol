@@ -2,9 +2,11 @@ import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AuthContext } from "../context/AuthContext";
+
 import LoginScreen from "../screens/auth/LoginScreen";
 import HomeScreen from "../screens/home/Homescreen";
 import VentasScreen from "../screens/ventas/VentasScreen";
+import MedioPagoScreen from "../screens/mediospago/MedioPagoScreens";
 
 const Stack = createNativeStackNavigator();
 
@@ -13,13 +15,14 @@ export default function AppNavigator() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        {userToken == null ? (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {!userToken ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
-            <Stack.Screen name="ventas" component={VentasScreen} />
+            <Stack.Screen name="Ventas" component={VentasScreen} />
+            <Stack.Screen name="MediosPago" component={MedioPagoScreen} />
           </>
         )}
       </Stack.Navigator>

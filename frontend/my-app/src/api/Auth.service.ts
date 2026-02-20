@@ -5,7 +5,7 @@ export const loginRequest = async(
     username: string,
     password: string
 ): Promise<LoginResponse> =>{
-    const response = await API.post("/login/",{
+    const response = await API.post("/loginandroid/",{
         username,
         password,
     });

@@ -1,34 +1,39 @@
-import React, { useContext, useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import React, { useContext } from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigation } from "@react-navigation/native";
 
 export default function HomeScreen() {
-  const { logout } = useContext(AuthContext);
-
-  const [token, setToken] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getToken = async () => {
-      const storedToken = await AsyncStorage.getItem("token");
-      setToken(storedToken);
-    };
-
-    getToken();
-  }, []);
+  const { rol, logout } = useContext(AuthContext);
+  const navigation = useNavigation<any>();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido al Sistema</Text>
+      <Text style={styles.title}>Panel Principal</Text>
+      <Text style={styles.subtitle}>Rol: {rol}</Text>
 
-      <Text style={styles.subtitle}>Token activo:</Text>
-      <Text numberOfLines={1} style={styles.token}>
-        {token}
-      </Text>
+      {/* VENTAS (Admin y Cajero) */}
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Ventas")}
+      >
+        <Text style={styles.buttonText}>Ventas</Text>
+      </TouchableOpacity>
 
-      <View style={{ marginTop: 20 }}>
-        <Button title="Cerrar Sesión" onPress={logout} />
-      </View>
+      {/* MEDIOS DE PAGO (solo Admin) */}
+      {rol === "Administrador" && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("MediosPago")}
+        >
+          <Text style={styles.buttonText}>Medios de Pago</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* CERRAR SESIÓN */}
+      <TouchableOpacity style={[styles.button, styles.logout]} onPress={logout}>
+        <Text style={styles.buttonText}>Cerrar Sesión</Text>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -38,18 +43,32 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     justifyContent: "center",
+    backgroundColor: "#f2f4f8",
   },
   title: {
-    fontSize: 22,
+    fontSize: 24,
     fontWeight: "bold",
-    marginBottom: 10,
+    textAlign: "center",
+    marginBottom: 5,
   },
   subtitle: {
-    fontSize: 16,
-    marginTop: 10,
+    textAlign: "center",
+    marginBottom: 25,
+    color: "#666",
   },
-  token: {
-    fontSize: 12,
-    color: "gray",
+  button: {
+    backgroundColor: "#4a90e2",
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 15,
+    alignItems: "center",
+  },
+  logout: {
+    backgroundColor: "#e74c3c",
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
