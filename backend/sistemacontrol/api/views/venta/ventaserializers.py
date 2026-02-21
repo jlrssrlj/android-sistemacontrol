@@ -5,7 +5,7 @@ from dashboard.models import Venta, DetalleVenta
 class DetalleVentaSerializer(serializers.ModelSerializer):
     class Meta:
         model = DetalleVenta
-        fields = ["producto", "cantidad", "precio_unitario"]
+        fields = '__all__'
 
 
 class VentaSerializer(serializers.ModelSerializer):
