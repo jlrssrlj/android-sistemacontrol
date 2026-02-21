@@ -40,6 +40,16 @@ export default function HomeScreen() {
         </TouchableOpacity>
       )}
 
+      {/* PRODUCTOS (solo Admin) */}
+      {rol === "Administrador" && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Productos")}
+        >
+          <Text style={styles.buttonText}>Productos</Text>
+        </TouchableOpacity>
+      )}
+
       {/* CERRAR SESIÓN */}
       <TouchableOpacity style={[styles.button, styles.logout]} onPress={logout}>
         <Text style={styles.buttonText}>Cerrar Sesión</Text>
