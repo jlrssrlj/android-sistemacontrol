@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from dashboard.models import Proveedor
-from .proveedoresserializer import ProveedorSerializer
+from .productoserializer import ProductoSerializer
 
-class ProveedorAPI(APIView):
+class ProductoAPI(APIView):
     def get(self, request):
-        proveedores = Proveedor.objects.all()
-        serializer = ProveedorSerializer(proveedores, many=True)
+        producto = Producto.objects.all()
+        serializer = ProductoSerializer(producto, many=True)
         return Response(serializer.data)

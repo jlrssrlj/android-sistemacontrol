@@ -1,8 +1,8 @@
 from rest_framework import serializers
-from dashboard.models import Categoria
+from dashboard.models import Arqueo
 
 
-class CategoriasSerializer(serializers.ModelSerializer):
+class ArqueoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Categoria
+        model = Arqueo
         fields = "__all__"
