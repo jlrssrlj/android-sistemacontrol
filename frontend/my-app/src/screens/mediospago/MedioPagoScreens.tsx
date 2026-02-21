@@ -14,6 +14,7 @@ import {
   getMediosPago,
   createMedioPago,
   deleteMedioPago,
+  updateMedioPago,
 } from "../services/mediopago";
 
 export default function MedioPagoScreen() {
@@ -22,15 +23,23 @@ export default function MedioPagoScreen() {
   const [medios, setMedios] = useState<MedioPago[]>([]);
   const [nombre, setNombre] = useState("");
 
+  const [editId, setEditId] = useState<number | null>(null);
+  const [editNombre, setEditNombre] = useState("");
+
   const cargarMedios = async () => {
-    const data = await getMediosPago();
-    setMedios(data);
+    try {
+      const data = await getMediosPago();
+      setMedios(data);
+    } catch {
+      Alert.alert("Error", "No se pudieron cargar los medios de pago");
+    }
   };
 
   useEffect(() => {
     cargarMedios();
   }, []);
 
+  /* ================= CREAR ================= */
   const handleCreate = async () => {
     if (!nombre.trim()) return;
 
@@ -43,14 +52,38 @@ export default function MedioPagoScreen() {
     }
   };
 
+  /* ================= EDITAR ================= */
+  const handleEdit = (medio: MedioPago) => {
+    setEditId(medio.id);
+    setEditNombre(medio.nombre);
+  };
+
+  const handleUpdate = async () => {
+    if (!editNombre.trim() || editId === null) return;
+
+    try {
+      await updateMedioPago(editId, editNombre);
+      setEditId(null);
+      setEditNombre("");
+      cargarMedios();
+    } catch {
+      Alert.alert("Error", "No se pudo actualizar");
+    }
+  };
+
+  /* ================= ELIMINAR ================= */
   const handleDelete = async (id: number) => {
     Alert.alert("Confirmar", "¿Eliminar medio de pago?", [
       { text: "Cancelar" },
       {
         text: "Eliminar",
         onPress: async () => {
-          await deleteMedioPago(id);
-          cargarMedios();
+          try {
+            await deleteMedioPago(id);
+            cargarMedios();
+          } catch {
+            Alert.alert("Error", "No se pudo eliminar");
+          }
         },
       },
     ]);
@@ -60,7 +93,7 @@ export default function MedioPagoScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Medios de Pago</Text>
 
-      {/* CREAR (solo Admin) */}
+      {/* CREAR */}
       {rol === "Administrador" && (
         <View style={styles.form}>
           <TextInput
@@ -75,6 +108,30 @@ export default function MedioPagoScreen() {
         </View>
       )}
 
+      {/* EDITAR */}
+      {rol === "Administrador" && editId !== null && (
+        <View style={styles.form}>
+          <TextInput
+            placeholder="Editar medio de pago"
+            value={editNombre}
+            onChangeText={setEditNombre}
+            style={styles.input}
+          />
+          <TouchableOpacity style={styles.button} onPress={handleUpdate}>
+            <Text style={styles.buttonText}>Guardar cambios</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              setEditId(null);
+              setEditNombre("");
+            }}
+          >
+            <Text style={styles.cancel}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* LISTA */}
       <FlatList
         data={medios}
@@ -84,12 +141,21 @@ export default function MedioPagoScreen() {
             <Text style={styles.itemText}>{item.nombre}</Text>
 
             {rol === "Administrador" && (
-              <TouchableOpacity
-                onPress={() => handleDelete(item.id)}
-                style={styles.delete}
-              >
-                <Text style={styles.deleteText}>Eliminar</Text>
-              </TouchableOpacity>
+              <View style={styles.actions}>
+                <TouchableOpacity
+                  onPress={() => handleEdit(item)}
+                  style={styles.edit}
+                >
+                  <Text style={styles.editText}>Editar</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  onPress={() => handleDelete(item.id)}
+                  style={styles.delete}
+                >
+                  <Text style={styles.deleteText}>Eliminar</Text>
+                </TouchableOpacity>
+              </View>
             )}
           </View>
         )}
@@ -97,6 +163,7 @@ export default function MedioPagoScreen() {
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -130,6 +197,11 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
   },
+  cancel: {
+    textAlign: "center",
+    marginTop: 10,
+    color: "#666",
+  },
   item: {
     backgroundColor: "#fff",
     padding: 15,
@@ -137,18 +209,33 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "center",
   },
   itemText: {
     fontSize: 16,
   },
+  actions: {
+    flexDirection: "row",
+    gap: 8,
+  },
+  edit: {
+    backgroundColor: "#f1c40f",
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 6,
+  },
+  editText: {
+    fontSize: 12,
+    color: "#000",
+  },
   delete: {
     backgroundColor: "#e74c3c",
-    paddingHorizontal: 12,
+    paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 6,
   },
   deleteText: {
-    color: "#fff",
     fontSize: 12,
+    color: "#fff",
   },
 });
