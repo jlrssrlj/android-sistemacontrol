@@ -5,6 +5,8 @@ from .views.venta.ventasviews import VentaListCreateView, VentaDetailView
 from .views.mediopago.mediopagoviews import MedioPagoView
 from .views.gastos.gastosviews import GastoAPI
 from .views.proveedores.proveedoresviews import ProveedorAPI
+from .views.categorias.categoriasviews import CategoriasView
+from .views.pruductos.productoviews import ProductoView
 
 urlpatterns = [
     path('loginandroid/', CustomTokenObtainPairView.as_view(), name='loginreact'),
@@ -15,4 +17,8 @@ urlpatterns = [
     path("mediopagos/<int:pk>/", MedioPagoView.as_view()),
     path("gastos/", GastoAPI.as_view(), name='gasto'),
     path("proveedores/", ProveedorAPI.as_view(), name='proveedors'),
+    path("categorias/", CategoriasView.as_view(), name='categorias'),
+    path("categorias/<int:pk>/", CategoriasView.as_view()),
+    path("producto/", ProductoView.as_view(), name='producto'),
+    path("producto/<int:pk>/", ProductoView.as_view(), name = "productoid"),
 ]

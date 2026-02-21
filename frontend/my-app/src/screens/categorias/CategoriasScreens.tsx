@@ -10,33 +10,30 @@ import {
 } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  MedioPago,
-  getMediosPago,
-  createMedioPago,
-  deleteMedioPago,
-  updateMedioPago,
-} from "../services/mediopago";
+  Categorias,
+  getCategorias,
+  createCategorias,
+  deleteCategorias,
+  updateCategorias,
+} from "../services/categoriasservice";
 
-export default function MedioPagoScreen() {
+export default function CategoriasScreen() {
   const { rol } = useContext(AuthContext);
 
-  const [medios, setMedios] = useState<MedioPago[]>([]);
+  const [categorias, setCategorias] = useState<Categorias[]>([]);
   const [nombre, setNombre] = useState("");
+
 
   const [editId, setEditId] = useState<number | null>(null);
   const [editNombre, setEditNombre] = useState("");
 
-  const cargarMedios = async () => {
-    try {
-      const data = await getMediosPago();
-      setMedios(data);
-    } catch {
-      Alert.alert("Error", "No se pudieron cargar los medios de pago");
-    }
+  const cargarCategoria = async () => {
+    const data = await getCategorias();
+    setCategorias(data);
   };
 
   useEffect(() => {
-    cargarMedios();
+    cargarCategoria();
   }, []);
 
   /* ================= CREAR ================= */
@@ -44,28 +41,28 @@ export default function MedioPagoScreen() {
     if (!nombre.trim()) return;
 
     try {
-      await createMedioPago(nombre);
+      await createCategorias(nombre);
       setNombre("");
-      cargarMedios();
+      cargarCategoria();
     } catch {
       Alert.alert("Error", "No autorizado");
     }
   };
 
   /* ================= EDITAR ================= */
-  const handleEdit = (medio: MedioPago) => {
-    setEditId(medio.id);
-    setEditNombre(medio.nombre);
+  const handleEdit = (categoria: Categorias) => {
+    setEditId(categoria.id);
+    setEditNombre(categoria.nombre);
   };
 
   const handleUpdate = async () => {
     if (!editNombre.trim() || editId === null) return;
 
     try {
-      await updateMedioPago(editId, editNombre);
+      await updateCategorias(editId, editNombre);
       setEditId(null);
       setEditNombre("");
-      cargarMedios();
+      cargarCategoria();
     } catch {
       Alert.alert("Error", "No se pudo actualizar");
     }
@@ -73,17 +70,13 @@ export default function MedioPagoScreen() {
 
   /* ================= ELIMINAR ================= */
   const handleDelete = async (id: number) => {
-    Alert.alert("Confirmar", "¿Eliminar medio de pago?", [
+    Alert.alert("Confirmar", "¿Eliminar categoria?", [
       { text: "Cancelar" },
       {
         text: "Eliminar",
         onPress: async () => {
-          try {
-            await deleteMedioPago(id);
-            cargarMedios();
-          } catch {
-            Alert.alert("Error", "No se pudo eliminar");
-          }
+          await deleteCategorias(id);
+          cargarCategoria();
         },
       },
     ]);
@@ -91,13 +84,13 @@ export default function MedioPagoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Medios de Pago</Text>
+      <Text style={styles.title}>Categorias</Text>
 
       {/* CREAR */}
       {rol === "Administrador" && (
         <View style={styles.form}>
           <TextInput
-            placeholder="Nombre del medio de pago"
+            placeholder="Nombre de la categoría"
             value={nombre}
             onChangeText={setNombre}
             style={styles.input}
@@ -112,7 +105,7 @@ export default function MedioPagoScreen() {
       {rol === "Administrador" && editId !== null && (
         <View style={styles.form}>
           <TextInput
-            placeholder="Editar medio de pago"
+            placeholder="Editar categoría"
             value={editNombre}
             onChangeText={setEditNombre}
             style={styles.input}
@@ -134,7 +127,7 @@ export default function MedioPagoScreen() {
 
       {/* LISTA */}
       <FlatList
-        data={medios}
+        data={categorias}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.item}>
@@ -235,7 +228,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   deleteText: {
-    fontSize: 12,
     color: "#fff",
+    fontSize: 12,
   },
 });

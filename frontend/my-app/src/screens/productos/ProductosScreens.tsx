@@ -10,33 +10,35 @@ import {
 } from "react-native";
 import { AuthContext } from "../../context/AuthContext";
 import {
-  MedioPago,
-  getMediosPago,
-  createMedioPago,
-  deleteMedioPago,
-  updateMedioPago,
-} from "../services/mediopago";
+  Producto,
+  getProducto,
+  createProducto,
+  deleteProducto,
+  updateProducto,
+} from "../services/productosservice";
 
-export default function MedioPagoScreen() {
+export default function ProductoScreen() {
   const { rol } = useContext(AuthContext);
 
-  const [medios, setMedios] = useState<MedioPago[]>([]);
+  const [producto, setProducto] = useState<Producto[]>([]);
   const [nombre, setNombre] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [precio, setPrecio] = useState("");
+  const [stock, setStock] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [proveedor, setProveedor] = useState("");
+
 
   const [editId, setEditId] = useState<number | null>(null);
   const [editNombre, setEditNombre] = useState("");
 
-  const cargarMedios = async () => {
-    try {
-      const data = await getMediosPago();
-      setMedios(data);
-    } catch {
-      Alert.alert("Error", "No se pudieron cargar los medios de pago");
-    }
+  const cargarProducto = async () => {
+    const data = await getProducto();
+    setProducto(data);
   };
 
   useEffect(() => {
-    cargarMedios();
+    cargarProducto();
   }, []);
 
   /* ================= CREAR ================= */
@@ -44,28 +46,47 @@ export default function MedioPagoScreen() {
     if (!nombre.trim()) return;
 
     try {
-      await createMedioPago(nombre);
-      setNombre("");
-      cargarMedios();
+      await createProducto({
+          nombre,
+          descripcion,
+          precio: parseFloat(precio),
+          stock: parseInt(stock),
+          categoria: Number(categoria),
+          proveedor: Number(proveedor),
+          
+      });
+      cargarProducto();
     } catch {
       Alert.alert("Error", "No autorizado");
     }
   };
 
   /* ================= EDITAR ================= */
-  const handleEdit = (medio: MedioPago) => {
-    setEditId(medio.id);
-    setEditNombre(medio.nombre);
+  const handleEdit = (producto: Producto) => {
+    setEditId(producto.id);
+    setNombre(producto.nombre);
+    setDescripcion(producto.descripcion);
+    setPrecio(producto.precio.toString());
+    setStock(producto.stock.toString());
+    setCategoria(producto.categoria.toString());
+    setProveedor(producto.proveedor.toString());
   };
 
   const handleUpdate = async () => {
-    if (!editNombre.trim() || editId === null) return;
+    if (editId === null) return;
 
     try {
-      await updateMedioPago(editId, editNombre);
+      await updateProducto(editId, {
+        nombre,
+        descripcion,
+        precio: parseFloat(precio),
+        stock: parseInt(stock),
+        categoria: Number(categoria),
+        proveedor: Number(proveedor),
+      });
+
       setEditId(null);
-      setEditNombre("");
-      cargarMedios();
+      cargarProducto();
     } catch {
       Alert.alert("Error", "No se pudo actualizar");
     }
@@ -73,17 +94,13 @@ export default function MedioPagoScreen() {
 
   /* ================= ELIMINAR ================= */
   const handleDelete = async (id: number) => {
-    Alert.alert("Confirmar", "¿Eliminar medio de pago?", [
+    Alert.alert("Confirmar", "¿Eliminar categoria?", [
       { text: "Cancelar" },
       {
         text: "Eliminar",
         onPress: async () => {
-          try {
-            await deleteMedioPago(id);
-            cargarMedios();
-          } catch {
-            Alert.alert("Error", "No se pudo eliminar");
-          }
+          await deleteProducto(id);
+          cargarProducto();
         },
       },
     ]);
@@ -91,13 +108,13 @@ export default function MedioPagoScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Medios de Pago</Text>
+      <Text style={styles.title}>Productos</Text>
 
       {/* CREAR */}
       {rol === "Administrador" && (
         <View style={styles.form}>
           <TextInput
-            placeholder="Nombre del medio de pago"
+            placeholder="Nombre del producto"
             value={nombre}
             onChangeText={setNombre}
             style={styles.input}
@@ -112,7 +129,7 @@ export default function MedioPagoScreen() {
       {rol === "Administrador" && editId !== null && (
         <View style={styles.form}>
           <TextInput
-            placeholder="Editar medio de pago"
+            placeholder="Editar categoría"
             value={editNombre}
             onChangeText={setEditNombre}
             style={styles.input}
@@ -134,7 +151,7 @@ export default function MedioPagoScreen() {
 
       {/* LISTA */}
       <FlatList
-        data={medios}
+        data={producto}
         keyExtractor={(item) => item.id.toString()}
         renderItem={({ item }) => (
           <View style={styles.item}>
@@ -235,7 +252,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   deleteText: {
-    fontSize: 12,
     color: "#fff",
+    fontSize: 12,
   },
 });

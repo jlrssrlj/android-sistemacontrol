@@ -2,35 +2,36 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
-from dashboard.models import MedioPago
-from .mediopagoserializer import MedioPagoSerializer
+
+from dashboard.models import Producto
+from .productoserializer import ProductoSerializer
 
 
 def es_admin(user):
     try:
         return user.empleado.rol.nombre == "Administrador"
-    except:
+    except Exception:
         return False
 
 
-class MedioPagoView(APIView):
+class ProductoView(APIView):
     permission_classes = [IsAuthenticated]
 
     # 🔹 LISTAR (ADMIN Y CAJERO)
     def get(self, request):
-        medios = MedioPago.objects.all()
-        serializer = MedioPagoSerializer(medios, many=True)
+        productos = Producto.objects.all()
+        serializer = ProductoSerializer(productos, many=True)  # ✅ CORREGIDO
         return Response(serializer.data)
 
     # 🔹 CREAR (SOLO ADMIN)
     def post(self, request):
         if not es_admin(request.user):
             return Response(
-                {"error": "Solo el administrador puede crear medios de pago"},
+                {"error": "Solo el administrador puede crear un Producto"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
-        serializer = MedioPagoSerializer(data=request.data)
+        serializer = ProductoSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -41,19 +42,19 @@ class MedioPagoView(APIView):
     def put(self, request, pk):
         if not es_admin(request.user):
             return Response(
-                {"error": "Solo el administrador puede editar medios de pago"},
+                {"error": "Solo el administrador puede editar un producto"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
         try:
-            medio = MedioPago.objects.get(pk=pk)
-        except MedioPago.DoesNotExist:
+            producto = Producto.objects.get(pk=pk)  # ✅ renombrado
+        except Producto.DoesNotExist:
             return Response(
-                {"error": "Medio de pago no encontrado"},
+                {"error": "Producto no encontrado"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        serializer = MedioPagoSerializer(medio, data=request.data)
+        serializer = ProductoSerializer(producto, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
@@ -64,17 +65,17 @@ class MedioPagoView(APIView):
     def delete(self, request, pk):
         if not es_admin(request.user):
             return Response(
-                {"error": "Solo el administrador puede eliminar medios de pago"},
+                {"error": "Solo el administrador puede eliminar un producto"},
                 status=status.HTTP_403_FORBIDDEN
             )
 
         try:
-            medio = MedioPago.objects.get(pk=pk)
-        except MedioPago.DoesNotExist:
+            producto = Producto.objects.get(pk=pk)  # ✅ renombrado
+        except Producto.DoesNotExist:
             return Response(
-                {"error": "Medio de pago no encontrado"},
+                {"error": "Producto no encontrado"},
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        medio.delete()
+        producto.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)

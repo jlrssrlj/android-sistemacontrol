@@ -30,6 +30,26 @@ export default function HomeScreen() {
         </TouchableOpacity>
       )}
 
+      {/* CATEGORIAS (solo Admin) */}
+      {rol === "Administrador" && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Categorias")}
+        >
+          <Text style={styles.buttonText}>Categorias</Text>
+        </TouchableOpacity>
+      )}
+
+      {/* PRODUCTOS (solo Admin) */}
+      {rol === "Administrador" && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("Productos")}
+        >
+          <Text style={styles.buttonText}>Productos</Text>
+        </TouchableOpacity>
+      )}
+
       {/* CERRAR SESIÓN */}
       <TouchableOpacity style={[styles.button, styles.logout]} onPress={logout}>
         <Text style={styles.buttonText}>Cerrar Sesión</Text>

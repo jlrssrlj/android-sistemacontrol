@@ -7,6 +7,8 @@ import LoginScreen from "../screens/auth/LoginScreen";
 import HomeScreen from "../screens/home/Homescreen";
 import VentasScreen from "../screens/ventas/VentasScreen";
 import MedioPagoScreen from "../screens/mediospago/MedioPagoScreens";
+import CategoriasScreen from "../screens/categorias/CategoriasScreens";
+import ProductoScreen  from "../screens/productos/ProductosScreens";
 
 const Stack = createNativeStackNavigator();
 
@@ -23,6 +25,8 @@ export default function AppNavigator() {
             <Stack.Screen name="Home" component={HomeScreen} />
             <Stack.Screen name="Ventas" component={VentasScreen} />
             <Stack.Screen name="MediosPago" component={MedioPagoScreen} />
+            <Stack.Screen name="Categorias" component={CategoriasScreen} />
+            <Stack.Screen name="Productos" component={ProductoScreen} />
           </>
         )}
       </Stack.Navigator>

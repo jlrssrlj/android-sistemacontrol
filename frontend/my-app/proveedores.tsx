@@ -17,7 +17,7 @@ export default function App() {
 
   useEffect(() => {
     // Nota: 10.0.2.2 es correcto para el emulador de Android (localhost de la PC)
-    fetch('http://192.168.1.2:8000/api/proveedores/')
+    fetch('http://192.168.20.27:8000/api/proveedores/')
       .then(res => res.json())
       .then(data => setProveedores(data))
       .catch(err => console.error("Error en fetch:", err))
