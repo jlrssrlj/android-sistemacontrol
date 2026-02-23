@@ -22,6 +22,6 @@ urlpatterns = [
     path("categorias/<int:pk>/", CategoriasView.as_view()),
     path("producto/", ProductoView.as_view(), name='producto'),
     path("producto/<int:pk>/", ProductoView.as_view(), name = "productoid"),
-    path("arqueo/", ProductoView.as_view(), name = "arqueo"),
-    path("arqueo/<int:pk>/", ProductoView.as_view(), name = "arqueoid"),
+    path("arqueo/", Arqueoview.as_view(), name = "arqueo"),
+    path("arqueo/<int:pk>/", Arqueoview.as_view(), name = "arqueoid"),
 ]
