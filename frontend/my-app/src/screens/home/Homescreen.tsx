@@ -21,6 +21,7 @@ export default function HomeScreen() {
       </TouchableOpacity>
 
       {/* MEDIOS DE PAGO (solo Admin) */}
+
       {rol === "Administrador" && (
         <TouchableOpacity
           style={styles.button}
@@ -29,7 +30,14 @@ export default function HomeScreen() {
           <Text style={styles.buttonText}>Medios de Pago</Text>
         </TouchableOpacity>
       )}
-
+      {rol === "Administrador" && (
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate("arqueo")}
+        >
+          <Text style={styles.buttonText}>Arqueos</Text>
+        </TouchableOpacity>
+      )}
       {/* CATEGORIAS (solo Admin) */}
       {rol === "Administrador" && (
         <TouchableOpacity
