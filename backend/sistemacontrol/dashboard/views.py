@@ -21,6 +21,9 @@ from .vistas.views_gastos import Gastos_views
 from .vistas.views_categoria import Categorias_views
 from .vistas.views_arqueo import Arqueo_views
 from .vistas.views_productos import Producto_views
+from django.utils import timezone
+from dashboard.models import Empleado, Venta, DetalleVenta, Producto, MedioPago, Arqueo
+from django.contrib import messages
 
 
 
@@ -129,11 +132,6 @@ def logout_view(request):
     auth.logout(request)
     return redirect('home')
 
-
-
-from django.utils import timezone
-from dashboard.models import Empleado, Venta, DetalleVenta, Producto, MedioPago, Arqueo
-from django.contrib import messages
 
 @login_required
 @rol_requerido('admin', 'cajero')

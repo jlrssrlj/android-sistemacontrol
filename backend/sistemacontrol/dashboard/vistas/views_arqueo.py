@@ -33,7 +33,7 @@ class Arqueo_views:
     def cerrar_arqueo(request, id):
         arqueo = ArqueoService.obtener_arqueo(id)
 
-        # ✅ Obtener ventas del arqueo y del empleado correspondiente
+        
         ventas = Venta.objects.filter(
             arqueo=arqueo,
             empleado=arqueo.empleado

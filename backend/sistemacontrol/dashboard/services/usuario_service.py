@@ -48,7 +48,7 @@ class UsuarioService:
     @staticmethod
     def obtener_empleados():
         return Empleado.objects.select_related('user', 'rol').all()
-    #trae la informacion de la tabla de rol
+    
     @staticmethod
     def obtener_roles():
         return Rol.objects.all()

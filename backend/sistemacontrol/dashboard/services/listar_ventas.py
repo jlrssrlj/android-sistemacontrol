@@ -1,5 +1,7 @@
 from dashboard.models import Venta
+from dashboard.decorators import rol_requerido
 
+@rol_requerido("administrador")
 def listar_ventas():
     """
     Retorna un queryset con las ventas ordenadas por fecha descendente,

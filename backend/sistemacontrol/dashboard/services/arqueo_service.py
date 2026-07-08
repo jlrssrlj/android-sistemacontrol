@@ -21,13 +21,13 @@ class ArqueoService:
         arqueo.fecha_fin = timezone.now()
         arqueo.monto_final = Decimal(monto_final)
 
-        # ✅ Solo ventas del arqueo actual y del mismo empleado
+        #
         total_ventas = Venta.objects.filter(
             arqueo=arqueo,
             empleado=arqueo.empleado
         ).aggregate(total=Sum('total'))['total'] or Decimal('0')
 
-        # ✅ Solo gastos asociados al arqueo
+        
         total_gastos = Gasto.objects.filter(
             arqueo=arqueo
         ).aggregate(total=Sum('monto'))['total'] or Decimal('0')
