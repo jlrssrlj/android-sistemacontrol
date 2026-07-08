@@ -2,9 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from ..services.listar_producto import ProductoService
 from django.contrib.auth.decorators import login_required
 from dashboard.models import Categoria, Producto, Proveedor
-
+from dashboard.decorators import rol_requerido
 
 class Producto_views:
+
 
     @login_required
     def crear_producto(request):
@@ -31,6 +32,7 @@ class Producto_views:
             'proveedores': proveedores
         })
 
+    @rol_requerido("administrador")
     @login_required
     def listar_producto(request):
         productos = ProductoService.listar_producto()
