@@ -30,8 +30,19 @@
         <div class="mb-3">
             <label for="categoria" class="form-label">Categoría</label>
             <select id="categoria" name="categoria_id" class="form-select" required>
+                <option value="">Seleccione una categoría</option>
                 {% for categoria in categorias %}
                     <option value="{{ categoria.id }}">{{ categoria.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="proveedor" class="form-label">Proveedor</label>
+            <select id="proveedor" name="proveedor_id" class="form-select" required>
+                <option value="">Seleccione un proveedor</option>
+                {% for proveedor in proveedores %}
+                    <option value="{{ proveedor.id }}">{{ proveedor.nombre }}</option>
                 {% endfor %}
             </select>
         </div>

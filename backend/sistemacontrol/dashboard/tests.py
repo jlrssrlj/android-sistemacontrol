@@ -3,28 +3,31 @@ from django.contrib.auth.models import User
 from decimal import Decimal
 from django.utils import timezone
 
-from dashboard.models import Empleado, Rol, Arqueo, Venta, Gasto, Cliente, Producto, Proveedor, Categoria, MedioPago
+from dashboard.models import Empleado, Rol, Arqueo, Venta, Gasto, Cliente, Producto, Proveedor, Categoria, MedioPago, Empresa
 from dashboard.services.arqueo_service import ArqueoService
 
 class CerrarArqueoServiceTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username='cajero', password='1234')
-        self.rol = Rol.objects.create(nombre='Cajero')
-        self.empleado = Empleado.objects.create(user=self.user, rol=self.rol)
+        self.empresa = Empresa.objects.create(nombre='Empresa Test', nit='123')
+        self.rol = Rol.objects.create(nombre='Cajero', empresa=self.empresa)
+        self.empleado = Empleado.objects.create(user=self.user, rol=self.rol, empresa=self.empresa)
 
-        self.proveedor = Proveedor.objects.create(nombre="ProveedorX", nit="999", direccion="Calle 123", telefono="321")
-        self.categoria = Categoria.objects.create(nombre="Granos")
-        self.producto = Producto.objects.create(nombre="Frijoles", descripcion="Negros", precio=10000, stock=50, categoria=self.categoria, proveedor=self.proveedor)
-        self.mediopago = MedioPago.objects.create(nombre="Efectivo")
-        self.cliente = Cliente.objects.create(nombre="ClienteX", identificacion="222", telefono="000", direccion="Calle")
+        self.proveedor = Proveedor.objects.create(nombre="ProveedorX", nit="999", direccion="Calle 123", telefono="321", empresa=self.empresa)
+        self.categoria = Categoria.objects.create(nombre="Granos", empresa=self.empresa)
+        self.producto = Producto.objects.create(nombre="Frijoles", descripcion="Negros", precio=10000, stock=50, categoria=self.categoria, proveedor=self.proveedor, empresa=self.empresa)
+        self.mediopago = MedioPago.objects.create(nombre="Efectivo", empresa=self.empresa)
+        self.cliente = Cliente.objects.create(nombre="ClienteX", identificacion="222", telefono="000", direccion="Calle", empresa=self.empresa)
 
         self.arqueo = Arqueo.objects.create(
+            empresa=self.empresa,
             empleado=self.empleado,
             fecha_inicio=timezone.now(),
             monto_inicial=Decimal("100000.00")
         )
 
         Venta.objects.create(
+            empresa=self.empresa,
             empleado=self.empleado,
             arqueo=self.arqueo,
             cliente=self.cliente,
@@ -33,6 +36,7 @@ class CerrarArqueoServiceTest(TestCase):
         )
 
         Gasto.objects.create(
+            empresa=self.empresa,
             empleado=self.empleado,
             proveedor=self.proveedor,
             concepto="Gasto prueba",
@@ -44,7 +48,7 @@ class CerrarArqueoServiceTest(TestCase):
         #
         monto_final_usuario = Decimal("122000.00")
 
-        arqueo_cerrado = ArqueoService.cerrar_arqueo(self.arqueo.id, monto_final_usuario)
+        arqueo_cerrado = ArqueoService.cerrar_arqueo(self.arqueo.id, monto_final_usuario, self.empresa)
 
         # Valores esperados
         total_ventas = Decimal("30000.00")

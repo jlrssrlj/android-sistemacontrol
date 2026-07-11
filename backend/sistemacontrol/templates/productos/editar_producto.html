@@ -36,7 +36,7 @@
             <select id="categoria" name="categoria_id" class="form-select" required>
                 {% for categoria in categorias %}
                     <option value="{{ categoria.id }}"
-                        {% if producto.categoria.id and producto.categoria == categoria.id %}selected{% endif %}>
+                        {% if producto.categoria and producto.categoria.id == categoria.id %}selected{% endif %}>
                         {{ categoria.nombre }}
                     </option>
                 {% endfor %}
@@ -62,4 +62,3 @@
     </form>
 </div>
 {% endblock %}
-

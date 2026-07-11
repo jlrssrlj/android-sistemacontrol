@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from dashboard.models import Producto
+from dashboard.empresa import obtener_empresa_requerida
 from .productoserializer import ProductoSerializer
 
 
@@ -19,7 +20,8 @@ class ProductoView(APIView):
 
     # 🔹 LISTAR (ADMIN Y CAJERO)
     def get(self, request):
-        productos = Producto.objects.all()
+        empresa = obtener_empresa_requerida(request.user)
+        productos = Producto.objects.filter(empresa=empresa)
         serializer = ProductoSerializer(productos, many=True)  # ✅ CORREGIDO
         return Response(serializer.data)
 
@@ -33,7 +35,14 @@ class ProductoView(APIView):
 
         serializer = ProductoSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            empresa = obtener_empresa_requerida(request.user)
+            categoria = serializer.validated_data.get("categoria")
+            proveedor = serializer.validated_data.get("proveedor")
+            if categoria and categoria.empresa_id != empresa.id:
+                return Response({"error": "La categoría no pertenece a tu empresa."}, status=status.HTTP_400_BAD_REQUEST)
+            if proveedor and proveedor.empresa_id != empresa.id:
+                return Response({"error": "El proveedor no pertenece a tu empresa."}, status=status.HTTP_400_BAD_REQUEST)
+            serializer.save(empresa=empresa)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -47,7 +56,8 @@ class ProductoView(APIView):
             )
 
         try:
-            producto = Producto.objects.get(pk=pk)  # ✅ renombrado
+            empresa = obtener_empresa_requerida(request.user)
+            producto = Producto.objects.get(pk=pk, empresa=empresa)  # ✅ renombrado
         except Producto.DoesNotExist:
             return Response(
                 {"error": "Producto no encontrado"},
@@ -56,6 +66,12 @@ class ProductoView(APIView):
 
         serializer = ProductoSerializer(producto, data=request.data)
         if serializer.is_valid():
+            categoria = serializer.validated_data.get("categoria")
+            proveedor = serializer.validated_data.get("proveedor")
+            if categoria and categoria.empresa_id != empresa.id:
+                return Response({"error": "La categoría no pertenece a tu empresa."}, status=status.HTTP_400_BAD_REQUEST)
+            if proveedor and proveedor.empresa_id != empresa.id:
+                return Response({"error": "El proveedor no pertenece a tu empresa."}, status=status.HTTP_400_BAD_REQUEST)
             serializer.save()
             return Response(serializer.data)
 
@@ -70,7 +86,8 @@ class ProductoView(APIView):
             )
 
         try:
-            producto = Producto.objects.get(pk=pk)  # ✅ renombrado
+            empresa = obtener_empresa_requerida(request.user)
+            producto = Producto.objects.get(pk=pk, empresa=empresa)  # ✅ renombrado
         except Producto.DoesNotExist:
             return Response(
                 {"error": "Producto no encontrado"},

@@ -440,8 +440,24 @@
           </div>
 
           <div class="col-lg-4">
-            <form class="form" action="/accesos" method="post" role="form" name="recipient">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} mb-3" role="alert">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            {% endif %}
+            <form class="form" action="{% url 'registrar_empresa' %}" method="post" role="form" name="recipient">
+              {% csrf_token %}
               <p class="title">Registro </p>
+              <label>
+                      <input type="text" class="input" name="empresa_nombre" id="empresa_nombre" placeholder="Nombre de la empresa" required>
+              </label>
+
+              <label>
+                      <input type="text" class="input" name="nit" id="nit" placeholder="NIT o identificación de empresa" required>
+              </label>
+
                   <div class="flex">
                   <label>
                       <input type="text" placeholder="Nombre"  class="input" name="nombreempleado" id="nombre" required>
@@ -458,6 +474,14 @@
                       <input type="email" class="input" name="correo" id="correo"placeholder="Correo" required>
                 <!--  <input type="email" class="form-control" name="correo" id="correo" placeholder="Correo" required> -->
               </label> 
+
+              <label>
+                      <input type="text" class="input" name="telefono" id="telefono" placeholder="Teléfono">
+              </label>
+
+              <label>
+                      <input type="text" class="input" name="direccion" id="direccion" placeholder="Dirección">
+              </label>
                   
               <label>
                       <input type="text" class="input" name="usuario" id="usuario" placeholder="Nombre de usuario">

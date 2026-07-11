@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from dashboard.models import Empleado, Rol
 from django.shortcuts import get_object_or_404
+from dashboard.empresa import filtrar_por_empresa
 
 class UsuarioService:
 
@@ -14,6 +15,7 @@ class UsuarioService:
             email=data['email']
         )
         Empleado.objects.create(
+            empresa=data['empresa'],
             user=user,
             rol=data['rol'],
             activo=True
@@ -32,6 +34,7 @@ class UsuarioService:
         usuario.save()
 
         empleado.activo = data.get('activo', empleado.activo)
+        empleado.empresa = data.get('empresa', empleado.empresa)
         rol = data.get('rol')
         if rol:
             empleado.rol = rol
@@ -39,16 +42,16 @@ class UsuarioService:
         return empleado
 
     @staticmethod
-    def eliminar_empleado(id):
-        empleado = get_object_or_404(Empleado, id=id)
+    def eliminar_empleado(id, user):
+        empleado = get_object_or_404(filtrar_por_empresa(Empleado.objects.all(), user), id=id)
         empleado.delete()
         return True
 
     
     @staticmethod
-    def obtener_empleados():
-        return Empleado.objects.select_related('user', 'rol').all()
+    def obtener_empleados(user):
+        return filtrar_por_empresa(Empleado.objects.select_related('user', 'rol', 'empresa'), user)
     
     @staticmethod
-    def obtener_roles():
-        return Rol.objects.all()
+    def obtener_roles(user):
+        return filtrar_por_empresa(Rol.objects.all(), user)

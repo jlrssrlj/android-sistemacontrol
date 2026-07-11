@@ -15,19 +15,30 @@ class VentaSerializer(serializers.ModelSerializer):
         model = Venta
         fields = [
             "id",
+            "empresa",
             "empleado",
             "arqueo",
             "cliente",
-            "medio_pago",
             "medio_pago",
             "fecha",
             "total",
             "detalles",
         ]
-        read_only_fields = ["total", "fecha"]
+        read_only_fields = ["empresa", "total", "fecha"]
 
     def create(self, validated_data):
         detalles_data = validated_data.pop("detalles")
+        empresa = validated_data["empresa"]
+        for campo in ("empleado", "arqueo", "cliente", "medio_pago"):
+            valor = validated_data.get(campo)
+            if valor and valor.empresa_id != empresa.id:
+                raise serializers.ValidationError(f"{campo} no pertenece a la empresa del usuario.")
+
+        for detalle_data in detalles_data:
+            producto = detalle_data.get("producto")
+            if producto and producto.empresa_id != empresa.id:
+                raise serializers.ValidationError("El producto no pertenece a la empresa del usuario.")
+
         venta = Venta.objects.create(**validated_data)
 
         total = 0

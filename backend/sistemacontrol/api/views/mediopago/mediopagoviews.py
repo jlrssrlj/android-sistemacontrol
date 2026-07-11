@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from dashboard.models import MedioPago
+from dashboard.empresa import obtener_empresa_requerida
 from .mediopagoserializer import MedioPagoSerializer
 
 
@@ -18,7 +19,8 @@ class MedioPagoView(APIView):
 
     # 🔹 LISTAR (ADMIN Y CAJERO)
     def get(self, request):
-        medios = MedioPago.objects.all()
+        empresa = obtener_empresa_requerida(request.user)
+        medios = MedioPago.objects.filter(empresa=empresa)
         serializer = MedioPagoSerializer(medios, many=True)
         return Response(serializer.data)
 
@@ -32,7 +34,8 @@ class MedioPagoView(APIView):
 
         serializer = MedioPagoSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            empresa = obtener_empresa_requerida(request.user)
+            serializer.save(empresa=empresa)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -46,7 +49,8 @@ class MedioPagoView(APIView):
             )
 
         try:
-            medio = MedioPago.objects.get(pk=pk)
+            empresa = obtener_empresa_requerida(request.user)
+            medio = MedioPago.objects.get(pk=pk, empresa=empresa)
         except MedioPago.DoesNotExist:
             return Response(
                 {"error": "Medio de pago no encontrado"},
@@ -69,7 +73,8 @@ class MedioPagoView(APIView):
             )
 
         try:
-            medio = MedioPago.objects.get(pk=pk)
+            empresa = obtener_empresa_requerida(request.user)
+            medio = MedioPago.objects.get(pk=pk, empresa=empresa)
         except MedioPago.DoesNotExist:
             return Response(
                 {"error": "Medio de pago no encontrado"},

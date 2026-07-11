@@ -3,6 +3,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from dashboard.models import Arqueo
+from dashboard.empresa import obtener_empresa_requerida
 from .arqueoserializer import ArqueoSerializer
 
 def es_admin(user):
@@ -21,18 +22,10 @@ class Arqueoview(APIView):
     permission_classes = [IsAuthenticated] 
 
     def get(self, request):
-        arqueo = Arqueo.objects.all()
+        empresa = obtener_empresa_requerida(request.user)
+        arqueo = Arqueo.objects.filter(empresa=empresa)
         serializer = ArqueoSerializer(arqueo, many=True)
         return Response(serializer.data)
-    
-    def post(self, request):
-        serializer = ArqueoSerializer(data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     def post(self, request):
         if not (es_admin(request.user) or es_cajero(request.user)):
@@ -44,7 +37,8 @@ class Arqueoview(APIView):
         serializer = ArqueoSerializer(data=request.data)
 
         if serializer.is_valid():
-            serializer.save(empleado=request.user.empleado)
+            empresa = obtener_empresa_requerida(request.user)
+            serializer.save(empresa=empresa, empleado=request.user.empleado)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         # 👇 MUESTRA EL ERROR REAL

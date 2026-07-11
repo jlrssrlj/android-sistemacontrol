@@ -4,25 +4,26 @@ from django.shortcuts import get_object_or_404
 class MediopagoService:
 
     @staticmethod
-    def crear_mediopago(data):
+    def crear_mediopago(data, empresa):
         pago = MedioPago.objects.create(
+            empresa=empresa,
             nombre = data['nombre']
         )
         return pago
     
     @staticmethod
-    def listar_mediopago():
-        pago = MedioPago.objects.all()
+    def listar_mediopago(empresa):
+        pago = MedioPago.objects.filter(empresa=empresa)
         return pago
     
     @staticmethod
-    def eliminar_mediopago(id):
-        pago = get_object_or_404(MedioPago, id=id)
+    def eliminar_mediopago(id, empresa):
+        pago = get_object_or_404(MedioPago, id=id, empresa=empresa)
         pago.delete()
 
     @staticmethod
-    def editar_mediopago(id,data):
-        pago = get_object_or_404(MedioPago, id=id)
+    def editar_mediopago(id, data, empresa):
+        pago = get_object_or_404(MedioPago, id=id, empresa=empresa)
         pago.nombre = data['nombre']
         pago.save()
         return pago

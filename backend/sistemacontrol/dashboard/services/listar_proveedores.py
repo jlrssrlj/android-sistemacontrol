@@ -4,8 +4,9 @@ from django.shortcuts import get_object_or_404
 class ProveedorService:
 
     @staticmethod
-    def crear_proveedor(data):
+    def crear_proveedor(data, empresa):
         proveedor = Proveedor.objects.create(
+            empresa=empresa,
             nombre=data['nombre'],
             nit=data['nit'],
             direccion=data['direccion'],
@@ -23,15 +24,15 @@ class ProveedorService:
         return proveedor
 
     @staticmethod
-    def eliminar_proveedor(id):
-        proveedor = get_object_or_404(Proveedor, id=id)
+    def eliminar_proveedor(id, empresa):
+        proveedor = get_object_or_404(Proveedor, id=id, empresa=empresa)
         proveedor.delete()
         return True
 
     @staticmethod
-    def obtener_proveedores():
-        return Proveedor.objects.all()
+    def obtener_proveedores(empresa):
+        return Proveedor.objects.filter(empresa=empresa)
 
     @staticmethod
-    def obtener_proveedor(id):
-        return get_object_or_404(Proveedor, id=id)
+    def obtener_proveedor(id, empresa):
+        return get_object_or_404(Proveedor, id=id, empresa=empresa)

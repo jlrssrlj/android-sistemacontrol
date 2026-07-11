@@ -6,6 +6,7 @@ class VentaService:
     def __init__(self, empleado, arqueo):
         self.empleado = empleado
         self.arqueo = arqueo
+        self.empresa = empleado.empresa
 
     @transaction.atomic
     def crear_venta(self, productos):  
@@ -13,13 +14,14 @@ class VentaService:
         detalles = []
 
         for item in productos:
-            producto = Producto.objects.get(id=item['producto_id'])
+            producto = Producto.objects.get(id=item['producto_id'], empresa=self.empresa)
             cantidad = item['cantidad']
             subtotal = producto.precio * cantidad
             total += subtotal
             detalles.append((producto, cantidad, producto.precio))
 
         venta = Venta.objects.create(
+            empresa=self.empresa,
             empleado=self.empleado,
             arqueo=self.arqueo,
             total=total

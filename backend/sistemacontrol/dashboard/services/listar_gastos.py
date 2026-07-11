@@ -5,16 +5,17 @@ from django.utils import timezone
 class GastosService:
 
     @staticmethod
-    def listar_gastos():
-        return Gasto.objects.all()
+    def listar_gastos(empresa):
+        return Gasto.objects.filter(empresa=empresa)
     
     @staticmethod
-    def obtener_gasto(id):
-        return get_object_or_404(Gasto, id=id)
+    def obtener_gasto(id, empresa):
+        return get_object_or_404(Gasto, id=id, empresa=empresa)
 
     @staticmethod
     def crear_gastos(data):
         gasto = Gasto.objects.create(
+            empresa=data['empresa'],
             empleado=data['empleado'],
             proveedor=data['proveedor'],
             concepto=data['concepto'],
@@ -25,8 +26,8 @@ class GastosService:
         return gasto
     
     @staticmethod
-    def editar_gasto(id, data):
-        gasto = get_object_or_404(Gasto, id=id)
+    def editar_gasto(id, data, empresa):
+        gasto = get_object_or_404(Gasto, id=id, empresa=empresa)
         gasto.empleado = data['empleado']
         gasto.proveedor = data['proveedor']
         gasto.concepto = data['concepto']
@@ -36,7 +37,7 @@ class GastosService:
         return gasto
     
     @staticmethod
-    def eliminar_gasto(id):
-        gasto = get_object_or_404(Gasto, id=id)
+    def eliminar_gasto(id, empresa):
+        gasto = get_object_or_404(Gasto, id=id, empresa=empresa)
         gasto.delete()
         return True

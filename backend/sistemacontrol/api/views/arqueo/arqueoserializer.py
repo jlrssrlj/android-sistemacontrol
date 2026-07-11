@@ -7,6 +7,7 @@ class ArqueoSerializer(serializers.ModelSerializer):
         fields = "__all__"
         read_only_fields = [
             "empleado",
+            "empresa",
             "fecha_inicio",
             "fecha_fin",
             "monto_final",

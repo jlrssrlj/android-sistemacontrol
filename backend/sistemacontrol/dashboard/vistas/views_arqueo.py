@@ -2,12 +2,14 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from dashboard.models import Arqueo, Venta
 from ..services.arqueo_service import ArqueoService
+from dashboard.empresa import obtener_empresa_requerida
 
 class Arqueo_views:
 
     @login_required
     def crear_arqueo(request):
         if request.method == 'POST':
+            empresa = obtener_empresa_requerida(request.user)
             monto_inicial = request.POST.get('monto_inicial')
 
             try:
@@ -20,6 +22,7 @@ class Arqueo_views:
             empleado = request.user.empleado
 
             data = {
+                'empresa': empresa,
                 'monto_inicial': monto_inicial,
                 'empleado': empleado
             }
@@ -31,11 +34,13 @@ class Arqueo_views:
 
     @login_required
     def cerrar_arqueo(request, id):
-        arqueo = ArqueoService.obtener_arqueo(id)
+        empresa = obtener_empresa_requerida(request.user)
+        arqueo = ArqueoService.obtener_arqueo(id, empresa)
 
         
         ventas = Venta.objects.filter(
             arqueo=arqueo,
+            empresa=empresa,
             empleado=arqueo.empleado
         ).select_related('cliente', 'medio_pago')
 
@@ -44,7 +49,7 @@ class Arqueo_views:
 
             try:
                 monto_final = float(monto_final)
-                ArqueoService.cerrar_arqueo(id, monto_final)
+                ArqueoService.cerrar_arqueo(id, monto_final, empresa)
                 return redirect('listar_arqueos')
 
             except ValueError:
@@ -61,7 +66,8 @@ class Arqueo_views:
 
     @login_required
     def listar_arqueo(request):
-        arqueos = ArqueoService.listar_arqueos()
+        empresa = obtener_empresa_requerida(request.user)
+        arqueos = ArqueoService.listar_arqueos(empresa)
         context = {
             'arqueos': arqueos,
         }
@@ -69,10 +75,11 @@ class Arqueo_views:
 
     @login_required
     def eliminar_arqueo(request, id):
-        arqueo = get_object_or_404(Arqueo, id=id)
+        empresa = obtener_empresa_requerida(request.user)
+        arqueo = get_object_or_404(Arqueo, id=id, empresa=empresa)
 
         if request.method == 'POST':
-            ArqueoService.eliminar_arqueo(id)
+            ArqueoService.eliminar_arqueo(id, empresa)
             return redirect('listar_arqueos')
 
         return render(request, 'arqueo/confirmacion_eliminacion_arqueo.html', {

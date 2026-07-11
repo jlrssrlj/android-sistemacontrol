@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% block title %}Carga masiva de productos{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Carga masiva de productos</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="mb-3">
+        <a href="{% url 'descargar_plantilla_productos' %}" class="btn btn-outline-secondary">
+            Descargar plantilla CSV
+        </a>
+        <a href="{% url 'listar_producto' %}" class="btn btn-outline-dark">
+            Volver
+        </a>
+    </div>
+
+    <form method="post" enctype="multipart/form-data" class="bg-white p-4 shadow-sm rounded">
+        {% csrf_token %}
+
+        <label for="id_archivo" class="form-label">Archivo CSV</label>
+        <input type="file" name="archivo" id="id_archivo" class="form-control mb-3" accept=".csv" required>
+
+        <button type="submit" class="btn btn-primary">Subir productos</button>
+    </form>
+</div>
+{% endblock %}

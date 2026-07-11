@@ -3,10 +3,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from dashboard.models import Rol
 from ..services.rol_service import Rolservice
 from django.contrib.auth.decorators import login_required
+from dashboard.empresa import obtener_empresa_requerida
 
 class Rol_views:
     def listar_rol(request):
-        rol = Rolservice.listar_rol()
+        empresa = obtener_empresa_requerida(request.user)
+        rol = Rolservice.listar_rol(empresa)
         return render(request, 'rol/listar_rol.html',{'rol': rol})
 
     @login_required
@@ -14,7 +16,8 @@ class Rol_views:
         if request.method == 'POST':
             nombre = request.POST.get('nombre')
             if nombre:
-                Rolservice.crear_rol({'nombre': nombre})
+                empresa = obtener_empresa_requerida(request.user)
+                Rolservice.crear_rol({'nombre': nombre}, empresa)
                 return redirect('listar_rol')
             else:
                 return render(request, 'rol/crear_rol.html',{'error': 'El nombre es obligatorio'})
@@ -23,12 +26,13 @@ class Rol_views:
 
 
     def editar_rol(request, id):
-        rol = get_object_or_404(Rolservice.listar_rol(), id=id)
+        empresa = obtener_empresa_requerida(request.user)
+        rol = get_object_or_404(Rolservice.listar_rol(empresa), id=id)
 
         if request.method == 'POST':
             nombre = request.POST.get('nombre')
             if nombre:
-                Rolservice.editar_rol(id, {'nombre': nombre})
+                Rolservice.editar_rol(id, {'nombre': nombre}, empresa)
                 return redirect('listar_rol')  
             else:
                 return render(request, 'rol/editar_rol.html', {
@@ -40,8 +44,10 @@ class Rol_views:
 
     def eliminar_rol(request,id):
         if request.method == 'POST':
-            Rolservice.eliminar_rol(id)
+            empresa = obtener_empresa_requerida(request.user)
+            Rolservice.eliminar_rol(id, empresa)
             return redirect('listar_rol')
-        rol = get_object_or_404(Rolservice.listar_rol(), id=id)
+        empresa = obtener_empresa_requerida(request.user)
+        rol = get_object_or_404(Rolservice.listar_rol(empresa), id=id)
         return render(request, 'rol/eliminar_rol.html',{'rol':rol})
    

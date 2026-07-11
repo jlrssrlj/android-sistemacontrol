@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 
 from dashboard.models import Categoria
+from dashboard.empresa import obtener_empresa_requerida
 from .categoriasserializer import CategoriasSerializer
 
 
@@ -19,7 +20,8 @@ class CategoriasView(APIView):
 
     # 🔹 LISTAR (ADMIN Y CAJERO)
     def get(self, request):
-        categoria = Categoria.objects.all()
+        empresa = obtener_empresa_requerida(request.user)
+        categoria = Categoria.objects.filter(empresa=empresa)
         serializer = CategoriasSerializer(categoria, many=True)
         return Response(serializer.data)
 
@@ -33,7 +35,8 @@ class CategoriasView(APIView):
 
         serializer = CategoriasSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            empresa = obtener_empresa_requerida(request.user)
+            serializer.save(empresa=empresa)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -47,7 +50,8 @@ class CategoriasView(APIView):
             )
 
         try:
-            medio = Categoria.objects.get(pk=pk)
+            empresa = obtener_empresa_requerida(request.user)
+            medio = Categoria.objects.get(pk=pk, empresa=empresa)
         except Categoria.DoesNotExist:
             return Response(
                 {"error": "Categoria no encontrada"},
@@ -70,7 +74,8 @@ class CategoriasView(APIView):
             )
 
         try:
-            medio = Categoria.objects.get(pk=pk)
+            empresa = obtener_empresa_requerida(request.user)
+            medio = Categoria.objects.get(pk=pk, empresa=empresa)
         except Categoria.DoesNotExist:
             return Response(
                 {"error": "Categoria no encontrada"},
